@@ -1,6 +1,7 @@
 //bus 12
 //cache 8 lineas correct direct 16 bytes por linea
 //Prueba01/12
+//fñlaskd
 //palabra 4
 //linea 3
 //etiqueta 5
