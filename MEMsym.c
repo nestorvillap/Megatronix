@@ -33,6 +33,7 @@ typedef struct {
     unsigned char Data[TAM_LINE];
 } T_CACHE_LINE;
 
+void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ,int linea, int bloque);
 int leerLinea(char nombre[], int linea, char* cadenaTemp);
 void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]);
 void VolcarCACHE(T_CACHE_LINE *tbl);
@@ -82,12 +83,17 @@ int main (int argc, char* argv[]){
             //Copiar el bloque de la ram
             printf("Se está cargando el bloque %02X en la línea %02X\n",bloque,linea);
             //actulizar ETQ Y DATOS
+<<<<<<< HEAD
             tbl[linea].ETQ=ETQ;
             for (int j = 0; j < TAM_LINE; j++)
             {
                 tbl[linea].Data[j]=Simul_RAM[bloque*TAM_LINE+j];
             }
 
+=======
+            TratarFallo(tbl,Simul_RAM,ETQ,linea,bloque);
+           
+>>>>>>> 1e22bc23d6440f84199d9b6cdc88c0a896659735
         }
         printf("T: %d, Acierto de CACHE, ADDR %04X Label %X linea %02X palabra %02X DATO %02X\n",globaltime,addr,ETQ,linea,palabra,tbl[linea].Data[palabra]);
         //Copiar los caracteres en texto
@@ -102,7 +108,14 @@ int main (int argc, char* argv[]){
     guardarCache(tbl);
     return  0;
 }
+void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ,int linea, int bloque){
+    tbl[linea].ETQ=ETQ;
+        for (int j = 0; j < TAM_LINE; j++)
+        {
+            tbl[linea].Data[j]=MRAM[bloque*TAM_LINE+j];
+        }
 
+}
 int leerLinea(char nombre[], int linea,char* cadenaTemp){
 
     FILE *archivo;
