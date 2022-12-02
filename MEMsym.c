@@ -28,20 +28,16 @@
 //
 //
 //
-//
-//
-//
-//
-//
-//
 typedef struct {
     unsigned char ETQ;
     unsigned char Data[TAM_LINE];
 } T_CACHE_LINE;
 
+void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ,int linea, int bloque);
 int leerLinea(char nombre[], int linea, char* cadenaTemp);
 void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]);
 void VolcarCACHE(T_CACHE_LINE *tbl);
+void guardarCache(T_CACHE_LINE tbl[NUM_FILAS]);
 void ParsearDireccion(unsigned int addr, int *ETQ, int*palabra, int *linea, int *bloque);
 
 int main (int argc, char* argv[]){
@@ -87,12 +83,8 @@ int main (int argc, char* argv[]){
             //Copiar el bloque de la ram
             printf("Se está cargando el bloque %02X en la línea %02X\n",bloque,linea);
             //actulizar ETQ Y DATOS
-            tbl[linea].ETQ=ETQ;
-            for (int j = 0; j < TAM_LINE; j++)
-            {
-                tbl[linea].Data[j]=Simul_RAM[bloque*TAM_LINE+j];
-            }
-
+            TratarFallo(tbl,Simul_RAM,ETQ,linea,bloque);
+           
         }
         printf("T: %d, Acierto de CACHE, ADDR %04X Label %X linea %02X palabra %02X DATO %02X\n",globaltime,addr,ETQ,linea,palabra,tbl[linea].Data[palabra]);
         //Copiar los caracteres en texto
@@ -104,9 +96,17 @@ int main (int argc, char* argv[]){
     texto[numaccesos+1]='\0';
     printf("Accesos totales: %d, fallos: %d, tiempo medio: %.2f\n",numaccesos,numfallos,((float)globaltime/(float)(numaccesos+1)));
     printf("Texto leido, \"%s\"\n",texto);
+    guardarCache(tbl);
     return  0;
 }
+void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ,int linea, int bloque){
+    tbl[linea].ETQ=ETQ;
+        for (int j = 0; j < TAM_LINE; j++)
+        {
+            tbl[linea].Data[j]=MRAM[bloque*TAM_LINE+j];
+        }
 
+}
 int leerLinea(char nombre[], int linea,char* cadenaTemp){
 
     FILE *archivo;
@@ -143,14 +143,36 @@ void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]){
 void VolcarCACHE(T_CACHE_LINE *tbl){
     for (int i = 0; i < 8; i++)
     {
-        printf("ETQ:FF DATA ",tbl[i].ETQ);
+        printf("ETQ:%02X DATA ",tbl[i].ETQ);
         for (int j = 15; j >= 0; j--)
         {
-            printf("%X ", tbl[i].Data[j]);
+            printf("%02X ", tbl[i].Data[j]);
         }
         printf("\n");
     }
     printf("\n");
+}
+void guardarCache(T_CACHE_LINE tbl[NUM_FILAS]){
+    FILE *archivo;
+
+    archivo = fopen("CONTENTS_CACHE.bin","w");
+    
+    if (archivo == NULL)
+    {
+        printf("Error, creando el archivo\n");
+        exit(-1);
+    }
+
+    for (int i = 0; (i < NUM_FILAS); i++)
+    {
+        for (int j = 0; j < TAM_LINE; ++j)
+        {
+            fputc(tbl[i].Data[j],archivo);
+        }        
+    }
+
+    fflush(archivo);
+    fclose(archivo);
 }
 void ParsearDireccion(unsigned int addr, int *ETQ, int*palabra, int *linea, int *bloque){
     *palabra = addr & 0b1111;
