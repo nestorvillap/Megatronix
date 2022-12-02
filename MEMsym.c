@@ -18,9 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<unistd.h>
 
 #define TAM_LINE 16
-#define NUM_FILAS 3
+#define NUM_FILAS 8
 //
 //
 //------------------ 16 bytes = 128 bits ETQ= 5bits data 
@@ -62,7 +63,7 @@ int main (int argc, char* argv[]){
     for(int i=0;i<16;i++){
         tbl[i].ETQ=0xFF;
         for(int j=0;j<TAM_LINE;j++){
-            tbl[i].Data[j]=(unsigned char)0x23f;
+            tbl[i].Data[j]=0x23;
         }
     }
 
@@ -79,21 +80,22 @@ int main (int argc, char* argv[]){
         ParsearDireccion(strtol(cadenaTemp, NULL, 16),&ETQ,&palabra,&linea,&bloque);
         if (tbl[linea].ETQ!=ETQ)
         {
+            //Sumar fallo
             numfallos++;
+            //Mensaje de fallo
+            printf("T: %d, Fallo de CACHE %d, ADDR %04X Label %X linea %02X palabra %02X bloque %02X\n",globaltime,numfallos,addr,ETQ,linea,palabra,bloque);
             //Copiar el bloque de la ram
-            
-            printf("se está cargando el bloque X en la líneaY\n");
+            printf("se está cargando el bloque %02X en la línea %02X\n",bloque,linea);
             //actulizar ETQ Y DATOS
             tbl[linea].ETQ=ETQ;
             for (int i = 0; i < TAM_LINE; ++i)
             {
-                texto[i]=Simul_RAM[bloque*TAM_LINE+i];
+                tbl[linea].Data[i]=Simul_RAM[bloque*TAM_LINE+i];
             }
         }
-        printf("T: %d, Fallo de CACHE %d, ADDR %04X Label %X linea %02X palabra %02X bloque %02X\n",globaltime,addr,ETQ,linea,palabra,bloque);
         //texto[i]=caracterLeido;
-        //VOLCAR CONTENIDO DE LA CACHE==HACER LA TABLA
-        //sleep(1);
+        VolcarCACHE(tbl);
+        sleep(1);
     }
     //printf("T: %d, Acierto de CACHE, ADDR %04X Label%X linea %02X palabra %02X DATO %02X ",globaltime,addr,ETQ,linea,palabra,dato);
     return  0;
@@ -127,10 +129,21 @@ int leerLinea(char nombre[], int linea,char* cadenaTemp){
 }
 
 void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]);
-void VolcarCACHE(T_CACHE_LINE *tbl);
+void VolcarCACHE(T_CACHE_LINE *tbl){
+    for (int i = 0; i < 8; i++)
+    {
+        printf("ETQ:FF DATA ",tbl[i].ETQ);
+        for (int j = 0; j < 16; j++)
+        {
+            printf("%X ", tbl[i].Data[j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
 void ParsearDireccion(unsigned int addr, int *ETQ, int*palabra, int *linea, int *bloque){
     *palabra = addr & 0b1111;
     *bloque = addr >> 4;
     *linea = (*bloque & 0b111);
     *ETQ = (*bloque & 0b11111000)>>3;
-};
+}
