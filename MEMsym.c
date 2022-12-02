@@ -83,17 +83,15 @@ int main (int argc, char* argv[]){
             //Copiar el bloque de la ram
             printf("Se está cargando el bloque %02X en la línea %02X\n",bloque,linea);
             //actulizar ETQ Y DATOS
-<<<<<<< HEAD
+
             tbl[linea].ETQ=ETQ;
             for (int j = 0; j < TAM_LINE; j++)
             {
                 tbl[linea].Data[j]=Simul_RAM[bloque*TAM_LINE+j];
             }
 
-=======
             TratarFallo(tbl,Simul_RAM,ETQ,linea,bloque);
            
->>>>>>> 1e22bc23d6440f84199d9b6cdc88c0a896659735
         }
         printf("T: %d, Acierto de CACHE, ADDR %04X Label %X linea %02X palabra %02X DATO %02X\n",globaltime,addr,ETQ,linea,palabra,tbl[linea].Data[palabra]);
         //Copiar los caracteres en texto
