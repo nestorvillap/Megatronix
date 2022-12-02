@@ -42,6 +42,7 @@ typedef struct {
 int leerLinea(char nombre[], int linea, char* cadenaTemp);
 void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]);
 void VolcarCACHE(T_CACHE_LINE *tbl);
+void guardarCache(T_CACHE_LINE tbl[NUM_FILAS]);
 void ParsearDireccion(unsigned int addr, int *ETQ, int*palabra, int *linea, int *bloque);
 
 int main (int argc, char* argv[]){
@@ -151,6 +152,28 @@ void VolcarCACHE(T_CACHE_LINE *tbl){
         printf("\n");
     }
     printf("\n");
+}
+void guardarCache(T_CACHE_LINE tbl[NUM_FILAS]){
+    FILE *archivo;
+
+    archivo = fopen("CONTENTS_CACHE.bin","w");
+    
+    if (archivo == NULL)
+    {
+        printf("Error, creando el archivo\n");
+        exit(-1);
+    }
+
+    for (int i = 0; (i < NUM_FILAS); i++)
+    {
+        for (int j = 0; j < TAM_LINE; ++j)
+        {
+            fputc(tbl[i].Data[j],archivo);
+        }        
+    }
+
+    fflush(archivo);
+    fclose(archivo);
 }
 void ParsearDireccion(unsigned int addr, int *ETQ, int*palabra, int *linea, int *bloque){
     *palabra = addr & 0b1111;
