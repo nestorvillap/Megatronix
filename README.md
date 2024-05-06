@@ -1,17 +1,25 @@
+# Cache Simulation Program
 
-###Proyecto Nestor & Alvaro
+This is a cache simulation program that demonstrates how a simplified Linux-like cache system works with the following configurations:
 
-<!-- 
-	Simulador de cache de 4096bytes de RAM, programado en C.
+- **Address Size**: 12 bits
+- **Line Size**: 3 bits
+- **Tag Size**: 5 bits
+- **Word Size**: 4 bits
 
-	Para futuros proyectos y/o dudas contactar mediante mail a: nestorvillap@gmail.com o carmonalanzasalvaro@gmail.com ; o en su defecto acceder a 
-	https://github.com/nestorvillap/megatronix.git
+## Memory and Cache
 
-	El simulador propone el concepto claro de cache©, donde, al buscar un archivo, tratara de encontrarlo en la cache, en caso de no estar ahi ubicado, 
-	se hara por contener ese archivo o una copia del mismo en la cache para asi tener un acceso rapido y facil.
+- **RAM**: 256 blocks, 4096 bytes total
+- **Cache**:
+  - Size: 128 bytes
+  - Lines: 8
+  - Line Size: 16 bytes
 
-	
+## Key Functions
 
--->
-
-
+- **`TratarFallo`**: Handles cache misses, updating tags and data from the RAM.
+- **`leerLinea`**: Reads a specific line from an input file.
+- **`LimpiarCACHE`**: Initializes the cache with default values.
+- **`VolcarCACHE`**: Prints the current state of the cache.
+- **`guardarCache`**: Saves the cache content to a binary file.
+- **`ParsearDireccion`**: Parses an address to obtain tag, line, and word values.
